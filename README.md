@@ -1,4 +1,4 @@
-# AgentAllowance
+# Agentllowance
 
 > **Ví Agent của bạn có sạch không?**
 >
@@ -142,13 +142,9 @@ python3 -m http.server 8000
 Không có build step, không cần `npm install`. Frontend load ethers v6 qua CDN
 (`cdn.jsdelivr.net/npm/ethers@6.13.4`). Cần mạng để load CDN + Google Fonts.
 
-> ⚠️ **ABI tạm thời:** `frontend/abi.json` hiện là **PLACEHOLDER**
-> (`{"AgentAllowance": [], "Badge": []}`) vì ABI thật đang được build từ
-> forge bởi subagent khác. Sau khi forge build xong, copy ABI thật từ
-> `contracts/out` vào `frontend/abi.json` (AgentAllowance + Badge), KHÔNG
-> viết tay. Cho tới lúc đó, các chức năng đọc contract trên frontend hiện
-> thông báo rõ ràng thay vì crash; quét qua verifier vẫn cần verifier URL
-> (đang TBD).
+`frontend/abi.json` là **ABI thật từ forge build** (AgentAllowance 31 entries,
+Badge 28 entries), KHÔNG viết tay. Địa chỉ contract + verifier URL vẫn TBD cho
+tới khi deploy mainnet 26/11.
 
 ### Verifier
 
@@ -194,10 +190,11 @@ Chạy local: `cd verifier && npm install && npm start` (cần `.env`).
 - **Lưu ý:** Solidity không cho phép error và event cùng tên `Paused` trong một
   contract, nên 2 event `Paused`/`Unpaused` của SPEC §3.4 được gộp thành
   `PauseChanged(bool paused, address indexed by)`; custom error `Paused()` được
-  giữ nguyên (test T7 kiểm tra revert `Paused`). Slither chưa chạy (chưa cài
-  trong môi trường này) — chạy trước mỗi deploy theo SPEC §12.2. `/scan` qua
-  BscScan API và public BSC RPC chưa test live (chưa có BscScan API key, chưa
-  deploy mainnet); đường RPC fallback đã chạy được trên Anvil local.
+giữ nguyên (test T7 kiểm tra revert `Paused`). **Slither đã chạy 21/11 (v0.11.6,
+  solc 0.8.24): 0 High, 0 Medium, 11 INFO đã xem xét, không cần sửa code** —
+    xem `TESTNET.md`. `/scan` qua BscScan API và public BSC RPC chưa test live
+    (chưa có BscScan API key, chưa deploy mainnet); đường RPC fallback đã chạy
+    được trên testnet qua NodeReal (xem `TESTNET.md`).
 
 ## Cách deploy
 

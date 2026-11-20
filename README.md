@@ -1,4 +1,4 @@
-# Agentllowance
+# AgentAllowance
 
 > **Ví Agent của bạn có sạch không?**
 >

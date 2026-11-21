@@ -3,8 +3,8 @@
 // "TBD" = chưa deploy, app.js phải hiện thông báo rõ ràng thay vì crash.
 const CONFIG = {
   chainId: 56,
-  agentAllowanceAddress: "0x2AdCA060da4231B7e6A9c9Eb9657FaC2DeF8eA3F",
-  badgeAddress: "0x473Bfd4c62a6c845eEF2191E323f75aff58982b9",
+  agentAllowanceAddress: "0x7985a1D26f1FA74153cC4cb84366AD4146f4Ce63",
+  badgeAddress: "0x7C2BA637b6463BCA3439D97E6F9311ab27202349",
   agentIdAddress: "0x60b9262456de011f7d15a54cdd8c48baaa8b022f",
   rpcUrl: "https://bsc-dataseed.binance.org/",
   verifierUrl: "https://agentallowance-verifier.onrender.com",

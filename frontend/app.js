@@ -93,6 +93,14 @@ const I18N = {
     noAgentIdTitle: "Chưa có Agent ID?",
     noAgentIdText: "Chỉ ví có Binance Agent ID mới quét và xác nhận điểm. Nhận Agent ID miễn phí — chỉ mất khoảng một phút — rồi quay lại kết nối ví.",
     haveAgentId: "Đã có Agent ID? Kết nối ví",
+    aiTitle: "🤖 Dùng Agentic AI",
+    aiDesc: "Không cần mở trình duyệt ví — agent của bạn tự quét ví, xác nhận điểm và xem bảng xếp hạng, có bằng chứng on-chain.",
+    aiStep1: "Sao chép prompt bên dưới.",
+    aiStep2: "Mở Binance App → AI Pro (hoặc AI agent đã kết nối Agentic Wallet) rồi dán prompt vào.",
+    aiStep3: "Gửi 1 lần — agent quét ví, xin chữ ký verifier, xác nhận điểm on-chain rồi báo bảng xếp hạng cho bạn.",
+    copyPrompt: "Sao chép prompt",
+    promptCopied: "Đã sao chép prompt.",
+    promptCopyFailed: "Sao chép thất bại. Hãy bôi đen prompt và copy tay.",
     verifierNotReady: "Verifier chưa sẵn sàng (URL verifier đang là TBD — chưa deploy lên Render). Tính năng quét / xác nhận điểm sẽ khả dụng sau khi deploy verifier.",
     contractNotReady: "Contract chưa deploy (địa chỉ đang là TBD). Chức năng on-chain sẽ khả dụng sau khi deploy mainnet.",
     abiPlaceholder: "ABI đang là bản tạm (PLACEHOLDER) — chờ ABI thật từ forge build. Chức năng đọc contract tạm thời chưa khả dụng.",
@@ -184,6 +192,14 @@ const I18N = {
     noAgentIdTitle: "No Agent ID yet?",
     noAgentIdText: "Only wallets with a Binance Agent ID can scan and attest a score. Claim a free Agent ID — it takes about a minute — then come back and connect your wallet.",
     haveAgentId: "Already have an Agent ID? Connect wallet",
+    aiTitle: "🤖 Use Agentic AI",
+    aiDesc: "No wallet browser needed — your agent scans your wallet, attests your score and checks the leaderboard, with on-chain proof.",
+    aiStep1: "Copy the prompt below.",
+    aiStep2: "Open the Binance App → AI Pro (or your AI agent connected to your Agentic Wallet) and paste it in.",
+    aiStep3: "Send it once — your agent scans your wallet, gets the verifier signature, attests your score on-chain, then reports your leaderboard rank.",
+    copyPrompt: "Copy prompt",
+    promptCopied: "Prompt copied.",
+    promptCopyFailed: "Copy failed. Select the prompt text and copy it manually.",
     verifierNotReady: "Verifier is not ready yet (verifier URL is still TBD — not deployed to Render). Scanning / score attestation will be available after the verifier is deployed.",
     contractNotReady: "Contracts are not deployed yet (address is TBD). On-chain features will be available after mainnet deployment.",
     abiPlaceholder: "ABI is still a PLACEHOLDER — waiting for the real ABI from the forge build. Reading contracts is temporarily unavailable.",
@@ -806,6 +822,33 @@ async function requestScoreAttestation() {
   }
 }
 
+// ---------- Copy prompt cho Agentic AI ----------
+async function copyAgentPrompt() {
+  const pre = document.getElementById("agentPrompt");
+  if (!pre) return;
+  const text = pre.textContent;
+  const btn = document.getElementById("copyPromptBtn");
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    if (btn) {
+      const old = btn.textContent;
+      btn.textContent = t("promptCopied");
+      setTimeout(() => { btn.textContent = old; }, 2000);
+    }
+  } catch (e) {
+    setStatus(t("promptCopyFailed"), "error");
+  }
+}
+
 // ---------- Init ----------
 document.addEventListener("DOMContentLoaded", () => {
   try {
@@ -822,6 +865,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("connectBtn").addEventListener("click", connectWallet);
   const haveAgentIdLink = document.getElementById("haveAgentIdLink");
   if (haveAgentIdLink) haveAgentIdLink.addEventListener("click", connectWallet);
+  const copyPromptBtn = document.getElementById("copyPromptBtn");
+  if (copyPromptBtn) copyPromptBtn.addEventListener("click", copyAgentPrompt);
   document.getElementById("ctaScan").addEventListener("click", () => { showView("scanView"); loadScan(); });
   document.getElementById("rescanBtn").addEventListener("click", loadScan);
   document.getElementById("attestBtn").addEventListener("click", requestScoreAttestation);

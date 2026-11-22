@@ -77,6 +77,44 @@
     </div>
 
     <div class="card">
+      <h2 data-i18n="aiTitle">🤖 Dùng Agentic AI</h2>
+      <p data-i18n="aiDesc">Không cần mở trình duyệt ví — agent của bạn tự quét ví, xác nhận điểm và xem bảng xếp hạng, có bằng chứng on-chain.</p>
+      <ol class="ai-steps">
+        <li data-i18n="aiStep1">Sao chép prompt bên dưới.</li>
+        <li data-i18n="aiStep2">Mở Binance App → AI Pro (hoặc AI agent đã kết nối Agentic Wallet) rồi dán prompt vào.</li>
+        <li data-i18n="aiStep3">Gửi 1 lần — agent quét ví, xin chữ ký verifier, xác nhận điểm on-chain rồi báo bảng xếp hạng cho bạn.</li>
+      </ol>
+      <p><button id="copyPromptBtn" class="btn" type="button" data-i18n="copyPrompt">Sao chép prompt</button></p>
+      <pre id="agentPrompt" class="prompt-box">TASK: Check my Binance Agentic Wallet's approval hygiene with AgentAllowance — scan my wallet, attest my score on-chain, and show me the leaderboard.
+
+You are helping me manage the ERC-20 token approvals of my own Agentic Wallet on BNB Smart Chain (chain ID 56). My wallet holds a Binance Agent ID. Only ever act on MY wallet — never look up or act on anyone else's wallet.
+
+1. SCAN — call the AgentAllowance verifier:
+   GET https://agentallowance-verifier.onrender.com/scan?agent=YOUR_WALLET_ADDRESS
+   It returns my Hygiene Score (0-100) and every risky approval: token, spender, allowance (Unlimited or the exact amount), whether the spender is source-verified, last use, and which flags apply. Report the score and the risky approvals, riskiest first.
+   Score formula (for reference): start at 100; -15 per unlimited approval to an unverified spender; -10 per unlimited approval to a verified spender; -10 per limited approval to an unverified spender; -5 per stale approval (unused for more than 90 days). Revoking an approval inside the scoring period adds back 50% of the points deducted for that flag (rounded down): +7 / +5 / +5 / +2. Floor 0, cap 100. Scoring period: 18/11/2026 08:00 UTC to 09/12/2026 08:00 UTC.
+2. ATTEST — confirm my score on-chain:
+   - Call POST https://agentallowance-verifier.onrender.com/score/attest with JSON body {"agent": "YOUR_WALLET_ADDRESS", "periodStart": 1794988800, "periodEnd": 1796803200} to get the verifier's EIP-712 signature (valid for 15 minutes).
+   - Show me the score and the exact transaction first, get my explicit approval, then call attestScore on the AgentAllowance contract 0x7985a1D26f1FA74153cC4cb84366AD4146f4Ce63 (chain 56) from my wallet, passing exactly the fields returned by the verifier: agent, score, periodStart, periodEnd, nonce, deadline, signature.
+   - Report the transaction hash and my confirmed score. Badge tiers by confirmed score: Bronze 50-69, Silver 70-89, Gold 90-100. Badge contract: 0x7C2BA637b6463BCA3439D97E6F9311ab27202349.
+3. LEADERBOARD — call GET https://agentallowance-verifier.onrender.com/leaderboard and tell me my rank, my confirmed score, and the top 3 wallets (names and scores). Only confirmed scores are ranked.
+
+SAFETY RULES — never break these:
+- Never ask me for a seed phrase, private key, or password. Never ask for a pairing code or any login code for my wallet.
+- Never send, approve, or sign any transaction without showing me the exact details first and getting my explicit approval for that transaction.
+- Never create a new approval with a value greater than 0. The only approval this skill ever sends is approve(spender, 0) to revoke a risky approval — and only after I explicitly approve that specific revoke.
+- Never move funds. Never call transfer or transferFrom. Never send BNB to any contract.
+- If you are unsure about an address or a transaction, stop and ask me instead of guessing.
+
+CONTRACTS (BNB Smart Chain, chain ID 56):
+- AgentAllowance: 0x7985a1D26f1FA74153cC4cb84366AD4146f4Ce63
+- Badge: 0x7C2BA637b6463BCA3439D97E6F9311ab27202349
+- Agent ID (ERC-721): 0x60b9262456de011f7d15a54cdd8c48baaa8b022f
+- Verifier: https://agentallowance-verifier.onrender.com
+- Web app: https://agentallowance-frontend.vercel.app</pre>
+    </div>
+
+    <div class="card">
       <h2 data-i18n="scoreTitle">Công thức Hygiene Score</h2>
       <img src="assets/hero-audit.webp" alt="Kiểm toán viên cầm kính lúp soi sổ cái nối thành chuỗi khối, bên cạnh là khiên bảo vệ" data-i18n-alt="heroImgAlt" class="illustration hero-img" fetchpriority="high">
       <p data-i18n="scoreFormula">Bắt đầu 100 điểm. Trừ 15 mỗi cờ unlimited cho spender chưa verify; trừ 10 mỗi cờ unlimited cho spender đã verify; trừ 10 mỗi cờ limited cho spender chưa verify; trừ 5 mỗi cờ stale (không dùng &gt; 90 ngày). Revoke trong kỳ được cộng lại 50% số đã trừ (làm tròn xuống): +7 / +5 / +5 / +2. Điểm tối thiểu 0, tối đa 100.</p>

@@ -60,6 +60,28 @@ else's wallet.
    hash, and the new Hygiene Score. The score only improves once the
    Approval event (owner = my wallet, spender, value = 0) is visible
    on-chain.
+6. ATTEST — confirm my score on-chain (do this after the scan, and again
+   after any revoke that changes the score):
+   - Call POST https://agentallowance-verifier.onrender.com/score/attest
+     with JSON body {"agent": "<my wallet address>", "periodStart":
+     1794988800, "periodEnd": 1796803200} to get the verifier's EIP-712
+     signature (valid for 15 minutes — get a fresh one for each retry).
+   - Show me the score and the exact transaction first, get my explicit
+     approval, then call attestScore on the AgentAllowance contract
+     0x7985a1D26f1FA74153cC4cb84366AD4146f4Ce63 (chain 56) from my wallet,
+     passing exactly the fields returned by the verifier: agent, score,
+     periodStart, periodEnd, nonce, deadline, signature.
+   - IMPORTANT: simulate AND send the transaction FROM my wallet address
+     (from = my wallet address). The contract requires BOTH the scored
+     wallet AND the transaction sender to hold an Agent ID — simulating
+     from any other address reverts with NotAgentId.
+   - A confirmed score mints or updates my soulbound Badge automatically
+     (Bronze 50–69, Silver 70–89, Gold 90–100). Report the transaction
+     hash and the badge tier.
+7. LEADERBOARD — after attesting, call GET
+   https://agentallowance-verifier.onrender.com/leaderboard and report my
+   rank and the top 3 wallets. Only confirmed (attested) scores appear
+   on the leaderboard.
 
 SAFETY RULES — never break these:
 - Never ask me for a seed phrase, private key, or password. Never ask

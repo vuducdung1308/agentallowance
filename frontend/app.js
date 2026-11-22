@@ -87,6 +87,7 @@ const I18N = {
     connectFirst: "Hãy kết nối ví Agent ID trong Binance App trước.",
     noWallet: "Không tìm thấy ví. Hãy mở app này trong trình duyệt dApp của Binance App.",
     wrongChain: "Ví đang ở chain khác (cần BNB Chain, chain ID 56).",
+    noAgentId: "Ví này chưa có Agent ID trên BNB Chain nên không thể xác nhận điểm. Hãy claim Agent ID trong Binance App rồi kết nối lại.",
     verifierNotReady: "Verifier chưa sẵn sàng (URL verifier đang là TBD — chưa deploy lên Render). Tính năng quét / xác nhận điểm sẽ khả dụng sau khi deploy verifier.",
     contractNotReady: "Contract chưa deploy (địa chỉ đang là TBD). Chức năng on-chain sẽ khả dụng sau khi deploy mainnet.",
     abiPlaceholder: "ABI đang là bản tạm (PLACEHOLDER) — chờ ABI thật từ forge build. Chức năng đọc contract tạm thời chưa khả dụng.",
@@ -172,6 +173,7 @@ const I18N = {
     connectFirst: "Please connect your Agent ID wallet in the Binance App first.",
     noWallet: "No wallet found. Please open this app inside the Binance App dApp browser.",
     wrongChain: "Wallet is on a different chain (BNB Chain, chain ID 56 is required).",
+    noAgentId: "This wallet has no Agent ID on BNB Chain, so the score cannot be attested. Claim an Agent ID in the Binance App, then reconnect.",
     verifierNotReady: "Verifier is not ready yet (verifier URL is still TBD — not deployed to Render). Scanning / score attestation will be available after the verifier is deployed.",
     contractNotReady: "Contracts are not deployed yet (address is TBD). On-chain features will be available after mainnet deployment.",
     abiPlaceholder: "ABI is still a PLACEHOLDER — waiting for the real ABI from the forge build. Reading contracts is temporarily unavailable.",
@@ -336,6 +338,26 @@ async function getBadgeRead() {
   return new ethers.Contract(CONFIG.badgeAddress, abi.Badge, provider);
 }
 
+// Đọc balanceOf trên contract Agent ID (ERC-721) qua RPC đọc.
+// Trả về true/false, hoặc null khi không kiểm tra được (fail-open:
+// lỗi RPC không được chặn đăng nhập).
+async function hasAgentIdOf(account) {
+  if (isTbd(CONFIG.agentIdAddress)) return null;
+  try {
+    const provider = getReadProvider();
+    if (!provider) return null;
+    const agentId = new ethers.Contract(
+      CONFIG.agentIdAddress,
+      ["function balanceOf(address account) view returns (uint256)"],
+      provider
+    );
+    const bal = await agentId.balanceOf(account);
+    return bal > 0n;
+  } catch (e) {
+    return null;
+  }
+}
+
 // ---------- Wallet ----------
 async function connectWallet() {
   if (!window.ethereum) { setStatus(t("noWallet"), "error"); return; }
@@ -355,6 +377,11 @@ async function connectWallet() {
     }
     const btn = document.getElementById("connectBtn");
     if (btn) btn.textContent = shortAddress(currentAccount);
+    // Kiểm tra Agent ID ngay khi đăng nhập: ví chưa có Agent ID thì
+    // attestScore() sẽ revert (NotAgentId) và verifier cũng từ chối ký —
+    // báo warning ngay từ đầu thay vì để người dùng bấm attest mới thất bại.
+    const hasAgentId = await hasAgentIdOf(currentAccount);
+    if (hasAgentId === false) setStatus(t("noAgentId"), "error");
     await loadScan();
     await loadProfile();
   } catch (e) {

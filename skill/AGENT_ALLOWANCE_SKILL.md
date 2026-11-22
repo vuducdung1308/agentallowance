@@ -4,9 +4,10 @@
 > nhập Agentic Wallet (baw CLI, Developer Mode). Prompt này là bản đầy đủ của
 > SPEC §7 / BRD FR-10.
 >
-> Địa chỉ contract: **TBD** — điền sau khi deploy mainnet (AgentAllowance và
-> Badge). Cho tới lúc đó, skill vẫn quét và revoke được qua dữ liệu public
-> trên BSC, nhưng điểm chưa thể xác nhận on-chain.
+> Địa chỉ contract mainnet (deploy 21/11/2026): AgentAllowance
+> `0x7985a1D26f1FA74153cC4cb84366AD4146f4Ce63`, Badge
+> `0x7C2BA637b6463BCA3439D97E6F9311ab27202349`. Điểm đã xác nhận được
+> on-chain qua verifier.
 
 ```text
 TASK: Keep my Binance Agentic Wallet's token approvals clean, using
@@ -73,13 +74,13 @@ SAFETY RULES — never break these:
 - If you are unsure about a spender or a transaction, stop and ask me
   instead of guessing.
 
-CONTRACTS (fill in after mainnet deploy):
-- AgentAllowance: TBD
-- Badge: TBD
+CONTRACTS (BNB Smart Chain, chain ID 56 — mainnet, deploy 21/11/2026):
+- AgentAllowance: 0x7985a1D26f1FA74153cC4cb84366AD4146f4Ce63
+- Badge: 0x7C2BA637b6463BCA3439D97E6F9311ab27202349
 - Agent ID (ERC-721): 0x60b9262456de011f7d15a54cdd8c48baaa8b022f
 - Chain: BNB Smart Chain, chain ID 56
-- Verifier: TBD (Render)
-- Web app: TBD (Vercel)
+- Verifier: https://agentallowance-verifier.onrender.com
+- Web app: https://agentallowance-frontend.vercel.app
 ```
 
 ## Ghi chú vận hành

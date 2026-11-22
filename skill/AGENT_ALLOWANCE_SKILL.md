@@ -75,6 +75,27 @@ else's wallet.
      (from = my wallet address). The contract requires BOTH the scored
      wallet AND the transaction sender to hold an Agent ID — simulating
      from any other address reverts with NotAgentId.
+   - If your simulation reverts, do NOT stop there — check the
+     simulation itself first: (a) confirm it really used from = my
+     wallet address (some tools silently ignore `from` and simulate from
+     their own address, which reverts with NotAgentId); (b) confirm the
+     signature is the FULL 65 bytes exactly as the verifier returned
+     it — never truncated or retyped from a shortened display; (c)
+     confirm the calldata: selector 0xe68926d5, then agent, score,
+     periodStart, periodEnd, nonce, deadline, signature, in that
+     order; (d) confirm on-chain: the contract is not paused,
+     nonces(my wallet) equals the signature nonce, Agent ID
+     balanceOf(my wallet) = 1, and the signature recovers to verifier
+     0x70326DbDE3573638E34B3c268FC89fA43c4c8FDD. A revert WITH a 4-byte
+     error (e.g. 0xdfc3592e NotAgentId, 0x5cd5d233 BadSignature) is
+     meaningful — decode it and fix the cause. A revert with EMPTY data
+     (0x) while all checks above pass is a known simulation-tool issue,
+     not proof the contract rejects the call: show me the full calldata
+     and the checks, and ask me whether to proceed.
+   - Do NOT send me to the web app to attest with the Agentic Wallet:
+     the Binance App's dApp browser only exposes the keyless wallet, the
+     Agentic Wallet cannot log in to the web app. For the Agentic
+     Wallet, you must complete the attest yourself.
    - A confirmed score mints or updates my soulbound Badge automatically
      (Bronze 50–69, Silver 70–89, Gold 90–100). Report the transaction
      hash and the badge tier.
@@ -103,6 +124,9 @@ CONTRACTS (BNB Smart Chain, chain ID 56 — mainnet, deploy 21/11/2026):
 - Chain: BNB Smart Chain, chain ID 56
 - Verifier: https://agentallowance-verifier.onrender.com
 - Web app: https://agentallowance-frontend.vercel.app
+- Source: the contract source is verified on BscScan (getsourcecode
+  returns the full source). Do not conclude it is unverified from a
+  Sourcify 404 — Sourcify removed its v1 API.
 ```
 
 ## Ghi chú vận hành

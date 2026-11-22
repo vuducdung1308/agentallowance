@@ -37,6 +37,8 @@ const I18N = {
   vi: {
     tagline: "Kiểm soát approval cho ví Agent ID",
     connectWallet: "Kết nối ví",
+    disconnectWallet: "Ngắt kết nối",
+    disconnected: "Đã ngắt kết nối ví.",
     navHome: "Trang chủ",
     navScan: "Quét ví",
     navProfile: "Hồ sơ",
@@ -147,6 +149,8 @@ const I18N = {
   en: {
     tagline: "Approval control for Agent ID wallets",
     connectWallet: "Connect wallet",
+    disconnectWallet: "Disconnect",
+    disconnected: "Wallet disconnected.",
     navHome: "Home",
     navScan: "Scan",
     navProfile: "Profile",
@@ -425,6 +429,8 @@ async function connectWallet() {
     }
     const btn = document.getElementById("connectBtn");
     if (btn) btn.textContent = shortAddress(currentAccount);
+    const dcBtn = document.getElementById("disconnectBtn");
+    if (dcBtn) dcBtn.style.display = "";
     // Kiểm tra Agent ID ngay khi đăng nhập: ví chưa có Agent ID thì
     // attestScore() sẽ revert (NotAgentId) và verifier cũng từ chối ký —
     // báo warning ngay từ đầu thay vì để người dùng bấm attest mới thất bại.
@@ -436,6 +442,42 @@ async function connectWallet() {
     if (e && e.code === 4001) setStatus(t("revokeCancelled"), "error");
     else setStatus(t("connectFirst"), "error");
   }
+}
+
+// ---------- Ngắt kết nối ví ----------
+// Ví injected (MetaMask / Binance) không có hàm disconnect chuẩn: app chỉ
+// xoá trạng thái của mình, đồng thời xin ví thu hồi quyền của site
+// (wallet_revokePermissions, EIP-2255 — MetaMask hỗ trợ, ví khác có thể
+// không; thất bại thì bỏ qua vì trạng thái app đã xoá). Muốn thu hồi hẳn
+// thì ngắt thêm trong mục "Connected sites" của ví.
+async function disconnectWallet() {
+  if (window.ethereum) {
+    try {
+      await window.ethereum.request({
+        method: "wallet_revokePermissions",
+        params: [{ eth_accounts: {} }],
+      });
+    } catch (e) { /* ví không hỗ trợ revoke — trạng thái app vẫn xoá bên dưới */ }
+  }
+  resetWalletState();
+  setStatus(t("disconnected"));
+}
+
+function resetWalletState() {
+  currentAccount = null;
+  currentHandle = "";
+  lastScan = null;
+  const chip = document.getElementById("walletChip");
+  if (chip) { chip.style.display = "none"; chip.textContent = ""; }
+  const btn = document.getElementById("connectBtn");
+  if (btn) btn.textContent = t("connectWallet");
+  const dcBtn = document.getElementById("disconnectBtn");
+  if (dcBtn) dcBtn.style.display = "none";
+  const listEl = document.getElementById("approvalList");
+  if (listEl) listEl.innerHTML = "";
+  const emptyEl = document.getElementById("scanEmpty");
+  if (emptyEl) emptyEl.style.display = "";
+  loadProfile();
 }
 
 async function resolveHandle(account) {
@@ -957,6 +999,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("langToggle").addEventListener("click", toggleLang);
   document.getElementById("connectBtn").addEventListener("click", connectWallet);
+  const disconnectBtn = document.getElementById("disconnectBtn");
+  if (disconnectBtn) disconnectBtn.addEventListener("click", disconnectWallet);
   const haveAgentIdLink = document.getElementById("haveAgentIdLink");
   if (haveAgentIdLink) haveAgentIdLink.addEventListener("click", connectWallet);
   const copyPromptBtn = document.getElementById("copyPromptBtn");
@@ -996,6 +1040,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.ethereum.on("accountsChanged", (accs) => {
       currentAccount = accs && accs.length ? accs[0] : null;
       if (currentAccount) connectWallet();
+      else resetWalletState();
     });
     // Đổi mạng trong ví -> tải lại trang để kiểm tra lại chain và xoá banner
     // sai chain cũ (trước đây không có listener này nên banner bị kẹt dù ví đã

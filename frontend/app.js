@@ -52,10 +52,13 @@ const I18N = {
     emptyStateAlt: "Hộp rỗng mở ra với kính lúp và dấu hỏi thân thiện: chưa có dữ liệu approval",
     heroSub: "AgentAllowance quét toàn bộ token approval của ví Agent ID trên BNB Chain, chấm Hygiene Score 0–100 và cho revoke 1 click những approval rủi ro.",
     deadlineLabel: "Hết kỳ nộp bài:",
-    ctaScan: "Quét ví của tôi",
+    ctaScan: "Kiểm tra điểm của tôi",
     statAgents: "Agent ID đã quét",
     statApprovals: "Approval đã quét",
     statRevokes: "Lần revoke đã xác nhận",
+    homeTop3Title: "Top 3 bảng xếp hạng",
+    top3Empty: "Chưa có ví nào xác nhận điểm.",
+    viewAll: "Xem tất cả →",
     howTitle: "Cách hoạt động — 3 bước",
     step1: "Quét: verifier quét toàn bộ ERC-20 allowance của ví bạn trên BSC (chain 56), kiểm tra spender đã verify source trên BscScan chưa và lần dùng gần nhất.",
     step2: "Chấm điểm: Hygiene Score 0–100 theo công thức công khai. Điểm \"tạm tính\" chưa qua verifier; điểm \"đã xác nhận\" được verifier ký EIP-712 và ghi on-chain.",
@@ -159,10 +162,13 @@ const I18N = {
     emptyStateAlt: "Open empty box with a magnifying glass and a friendly question mark: no approval data yet",
     heroSub: "AgentAllowance scans all token approvals of your Agent ID wallet on BNB Chain, scores a Hygiene Score 0–100, and lets you revoke risky approvals in one click.",
     deadlineLabel: "Submission deadline:",
-    ctaScan: "Scan my wallet",
+    ctaScan: "Check My Score",
     statAgents: "Agent IDs scanned",
     statApprovals: "Approvals scanned",
     statRevokes: "Confirmed revokes",
+    homeTop3Title: "Top 3 leaderboard",
+    top3Empty: "No wallets have attested yet.",
+    viewAll: "View all →",
     howTitle: "How it works — 3 steps",
     step1: "Scan: the verifier scans all ERC-20 allowances of your wallet on BSC (chain 56), checks whether each spender is source-verified on BscScan, and finds the last use.",
     step2: "Score: Hygiene Score 0–100 using the public formula. An \"estimated\" score is not yet verifier-signed; a \"verified\" score is signed by the verifier (EIP-712) and recorded on-chain.",
@@ -786,6 +792,14 @@ async function loadStats() {
       document.querySelectorAll("[data-band]").forEach((el) => {
         el.textContent = String((data.bands || {})[el.getAttribute("data-band")] ?? 0);
       });
+      // Top 3 trang chủ (kiểu OPN Builder Board): dùng chung dữ liệu /leaderboard.
+      const top3El = document.getElementById("homeTop3");
+      if (top3El) {
+        const rows = Array.isArray(data.rows) ? data.rows.slice(0, 3) : [];
+        top3El.innerHTML = rows.length
+          ? rows.map((r, i) => "<li>#" + (i + 1) + " " + esc(r.handle || shortAddress(r.agent)) + " — " + esc(String(r.score)) + " / 100</li>").join("")
+          : "<li>" + esc(t("top3Empty")) + "</li>";
+      }
       showNotice(noticeEl, "");
       return;
     }
@@ -812,6 +826,16 @@ async function loadStats() {
     document.querySelectorAll("[data-band]").forEach((el) => {
       el.textContent = String(bands[el.getAttribute("data-band")] || 0);
     });
+    const top3El = document.getElementById("homeTop3");
+    if (top3El) {
+      const rows = [...latest.entries()]
+        .map(([agent, v]) => ({ agent, score: v.score }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+      top3El.innerHTML = rows.length
+        ? rows.map((r, i) => "<li>#" + (i + 1) + " " + esc(shortAddress(r.agent)) + " — " + esc(String(r.score)) + " / 100</li>").join("")
+        : "<li>" + esc(t("top3Empty")) + "</li>";
+    }
     showNotice(noticeEl, "");
   } catch (e) {
     showNotice(noticeEl, t("scanFailed"), "error");
@@ -950,6 +974,21 @@ document.addEventListener("DOMContentLoaded", () => {
     proofBadge.href = "https://bscscan.com/address/" + CONFIG.badgeAddress;
     proofBadge.textContent = shortAddress(CONFIG.badgeAddress);
   }
+  const homeProofAA = document.getElementById("homeProofAA");
+  if (homeProofAA && !isTbd(CONFIG.agentAllowanceAddress)) {
+    homeProofAA.href = "https://bscscan.com/address/" + CONFIG.agentAllowanceAddress;
+    homeProofAA.textContent = shortAddress(CONFIG.agentAllowanceAddress);
+  }
+  const homeProofBadge = document.getElementById("homeProofBadge");
+  if (homeProofBadge && !isTbd(CONFIG.badgeAddress)) {
+    homeProofBadge.href = "https://bscscan.com/address/" + CONFIG.badgeAddress;
+    homeProofBadge.textContent = shortAddress(CONFIG.badgeAddress);
+  }
+  const viewAllBtn = document.getElementById("viewAllLeaderboard");
+  if (viewAllBtn) viewAllBtn.addEventListener("click", () => showView("leaderboardSection"));
+  // Nạp số liệu + Top 3 ngay khi mở trang (trước đây chỉ nạp khi vào tab Thống kê
+  // nên các pill ở trang chủ luôn hiện "—" ở lần mở đầu).
+  loadStats();
   document.getElementById("ctaScan").addEventListener("click", () => { showView("scanView"); loadScan(); });
   document.getElementById("rescanBtn").addEventListener("click", loadScan);
   document.getElementById("attestBtn").addEventListener("click", requestScoreAttestation);

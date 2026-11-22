@@ -47,7 +47,8 @@
           <span class="pill"><strong id="homeRevokes">—</strong>&nbsp;<span data-i18n="statRevokes">Lần revoke đã xác nhận</span></span>
         </div>
         <p class="countdown-pill"><span data-i18n="deadlineLabel">Hết kỳ nộp bài:</span> <span class="countdown" id="countdown">—</span></p>
-        <p><button id="ctaScan" class="btn" type="button" data-i18n="ctaScan">Quét ví của tôi</button></p>
+        <p><button id="ctaScan" class="btn" type="button" data-i18n="ctaScan">Kiểm tra điểm của tôi</button></p>
+        <p class="proof-line"><span data-i18n="onChainProof">Bằng chứng on-chain</span>: <a id="homeProofAA" href="#" target="_blank" rel="noopener">—</a> · <a id="homeProofBadge" href="#" target="_blank" rel="noopener">—</a></p>
       </div>
 
       <div class="hero-right">
@@ -74,6 +75,12 @@
         <li data-i18n="step2"><strong>Chấm điểm:</strong> Hygiene Score 0–100 theo công thức công khai. Điểm "tạm tính" chưa qua verifier; điểm "đã xác nhận" được verifier ký EIP-712 và ghi on-chain.</li>
         <li data-i18n="step3"><strong>Revoke:</strong> bấm Revoke ở từng dòng approval rủi ro — app chỉ gửi approve(spender, 0), luôn có màn hình xác nhận của ví. Revoke xong điểm tăng lại một phần.</li>
       </ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="homeTop3Title">Top 3 bảng xếp hạng</h2>
+      <ol id="homeTop3" class="history-list"><li data-i18n="top3Empty">Chưa có ví nào xác nhận điểm.</li></ol>
+      <p><button id="viewAllLeaderboard" class="linklike" type="button" data-i18n="viewAll">Xem tất cả →</button></p>
     </div>
 
     <div class="card">

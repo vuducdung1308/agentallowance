@@ -6,7 +6,7 @@
 <title>AgentAllowance — Ví Agent của bạn có sạch không?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <script src="config.js"></script>
@@ -14,10 +14,12 @@
 </head>
 <body>
 <header>
-  <div class="logo">🛡️ AgentAllowance<small data-i18n="tagline">Kiểm soát approval cho ví Agent ID</small></div>
+  <div class="logo">🛡️ AgentAllowance</div>
   <div class="header-actions">
     <span id="walletChip" class="wallet-chip" style="display:none"></span>
     <button id="langToggle" class="lang-toggle" type="button">EN</button>
+    <!-- Link claim Agent ID: tạm dùng trang claim chuẩn của Binance, sẽ thay bằng link ref của Dũng khi có. -->
+    <a class="btn btn-black" href="https://web3.binance.com" target="_blank" rel="noopener" data-i18n="claimAgentId">Nhận Agent ID ↗</a>
     <button id="connectBtn" class="btn" type="button" data-i18n="connectWallet">Kết nối ví</button>
   </div>
 </header>
@@ -35,18 +37,34 @@
 
   <!-- ============ HOME ============ -->
   <section id="homeView" class="view active">
-    <div class="card hero">
-      <h1 data-i18n="heroTitle">Ví Agent của bạn có sạch không?</h1>
-      <p data-i18n="heroSub">AgentAllowance quét toàn bộ token approval của ví Agent ID trên BNB Chain, chấm Hygiene Score 0–100 và cho revoke 1 click những approval rủi ro.</p>
-      <img src="assets/hero-audit.webp" alt="Kiểm toán viên cầm kính lúp soi sổ cái nối thành chuỗi khối, bên cạnh là khiên bảo vệ" data-i18n-alt="heroImgAlt" class="illustration hero-img" fetchpriority="high">
-      <p><span data-i18n="deadlineLabel">Hết kỳ nộp bài:</span> <span class="countdown" id="countdown">—</span></p>
-      <p><button id="ctaScan" class="btn" type="button" data-i18n="ctaScan">Quét ví của tôi</button></p>
-    </div>
+    <div class="hero-wrap">
+      <div class="hero-left">
+        <h1 data-i18n="heroTitle">Ví Agent của bạn có sạch không?</h1>
+        <p class="hero-sub" data-i18n="heroSub">AgentAllowance quét toàn bộ token approval của ví Agent ID trên BNB Chain, chấm Hygiene Score 0–100 và cho revoke 1 click những approval rủi ro.</p>
+        <div class="stat-pills">
+          <span class="pill"><span class="dot"></span><strong id="homeAgents">—</strong>&nbsp;<span data-i18n="statAgents">Agent ID đã quét</span></span>
+          <span class="pill"><strong id="homeApprovals">—</strong>&nbsp;<span data-i18n="statApprovals">Approval đã quét</span></span>
+          <span class="pill"><strong id="homeRevokes">—</strong>&nbsp;<span data-i18n="statRevokes">Lần revoke đã xác nhận</span></span>
+        </div>
+        <p class="countdown-pill"><span data-i18n="deadlineLabel">Hết kỳ nộp bài:</span> <span class="countdown" id="countdown">—</span></p>
+        <p><button id="ctaScan" class="btn" type="button" data-i18n="ctaScan">Quét ví của tôi</button></p>
+      </div>
 
-    <div class="stat-grid">
-      <div class="stat"><div class="num" id="homeAgents">—</div><div class="lbl" data-i18n="statAgents">Agent ID đã quét</div></div>
-      <div class="stat"><div class="num" id="homeApprovals">—</div><div class="lbl" data-i18n="statApprovals">Approval đã quét</div></div>
-      <div class="stat"><div class="num" id="homeRevokes">—</div><div class="lbl" data-i18n="statRevokes">Lần revoke đã xác nhận</div></div>
+      <div class="hero-right">
+        <div class="card agent-id-panel">
+          <!-- Placeholder thẻ Agent ID: Dũng sẽ gửi ảnh thật + link ref sau, lúc đó thay khối .agent-id-card này bằng <img src="assets/agent-id-card.webp">. -->
+          <div class="agent-id-card" aria-hidden="true">
+            <div class="agent-id-top"><span>AGENT ID</span><span>ONE AND ONLY</span></div>
+            <div class="agent-id-name">yourname</div>
+            <div class="agent-id-foot"><span>yourname.ai</span><span>BINANCE</span></div>
+          </div>
+          <h2 data-i18n="noAgentIdTitle">Chưa có Agent ID?</h2>
+          <p class="muted" data-i18n="noAgentIdText">Chỉ ví có Binance Agent ID mới quét và xác nhận điểm. Nhận Agent ID miễn phí — chỉ mất khoảng một phút — rồi quay lại kết nối ví.</p>
+          <!-- Link claim Agent ID: tạm dùng trang claim chuẩn của Binance, sẽ thay bằng link ref của Dũng khi có. -->
+          <p><a class="btn btn-big" href="https://web3.binance.com" target="_blank" rel="noopener" data-i18n="claimAgentIdBig">NHẬN AGENT ID CỦA BẠN ↗</a></p>
+          <p><button id="haveAgentIdLink" class="linklike" type="button" data-i18n="haveAgentId">Đã có Agent ID? Kết nối ví</button></p>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -60,6 +78,7 @@
 
     <div class="card">
       <h2 data-i18n="scoreTitle">Công thức Hygiene Score</h2>
+      <img src="assets/hero-audit.webp" alt="Kiểm toán viên cầm kính lúp soi sổ cái nối thành chuỗi khối, bên cạnh là khiên bảo vệ" data-i18n-alt="heroImgAlt" class="illustration hero-img" fetchpriority="high">
       <p data-i18n="scoreFormula">Bắt đầu 100 điểm. Trừ 15 mỗi cờ unlimited cho spender chưa verify; trừ 10 mỗi cờ unlimited cho spender đã verify; trừ 10 mỗi cờ limited cho spender chưa verify; trừ 5 mỗi cờ stale (không dùng &gt; 90 ngày). Revoke trong kỳ được cộng lại 50% số đã trừ (làm tròn xuống): +7 / +5 / +5 / +2. Điểm tối thiểu 0, tối đa 100.</p>
       <p data-i18n="scoreExample">Ví dụ: 1 cờ unlimited chưa verify → 85. Revoke xong → 92. Approve lại unlimited cho cùng spender → quay về 85.</p>
       <p data-i18n="scoreBadge">Badge theo band điểm đã xác nhận: Bronze 50–69, Silver 70–89, Gold 90–100. Dưới 50 không mint mới; badge đã nhận không bị đốt khi điểm tụt.</p>

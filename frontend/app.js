@@ -88,6 +88,11 @@ const I18N = {
     noWallet: "Không tìm thấy ví. Hãy mở app này trong trình duyệt dApp của Binance App.",
     wrongChain: "Ví đang ở chain khác (cần BNB Chain, chain ID 56).",
     noAgentId: "Ví này chưa có Agent ID trên BNB Chain nên không thể xác nhận điểm. Hãy claim Agent ID trong Binance App rồi kết nối lại.",
+    claimAgentId: "Nhận Agent ID ↗",
+    claimAgentIdBig: "NHẬN AGENT ID CỦA BẠN ↗",
+    noAgentIdTitle: "Chưa có Agent ID?",
+    noAgentIdText: "Chỉ ví có Binance Agent ID mới quét và xác nhận điểm. Nhận Agent ID miễn phí — chỉ mất khoảng một phút — rồi quay lại kết nối ví.",
+    haveAgentId: "Đã có Agent ID? Kết nối ví",
     verifierNotReady: "Verifier chưa sẵn sàng (URL verifier đang là TBD — chưa deploy lên Render). Tính năng quét / xác nhận điểm sẽ khả dụng sau khi deploy verifier.",
     contractNotReady: "Contract chưa deploy (địa chỉ đang là TBD). Chức năng on-chain sẽ khả dụng sau khi deploy mainnet.",
     abiPlaceholder: "ABI đang là bản tạm (PLACEHOLDER) — chờ ABI thật từ forge build. Chức năng đọc contract tạm thời chưa khả dụng.",
@@ -174,6 +179,11 @@ const I18N = {
     noWallet: "No wallet found. Please open this app inside the Binance App dApp browser.",
     wrongChain: "Wallet is on a different chain (BNB Chain, chain ID 56 is required).",
     noAgentId: "This wallet has no Agent ID on BNB Chain, so the score cannot be attested. Claim an Agent ID in the Binance App, then reconnect.",
+    claimAgentId: "Claim Agent ID ↗",
+    claimAgentIdBig: "CLAIM YOUR AGENT ID ↗",
+    noAgentIdTitle: "No Agent ID yet?",
+    noAgentIdText: "Only wallets with a Binance Agent ID can scan and attest a score. Claim a free Agent ID — it takes about a minute — then come back and connect your wallet.",
+    haveAgentId: "Already have an Agent ID? Connect wallet",
     verifierNotReady: "Verifier is not ready yet (verifier URL is still TBD — not deployed to Render). Scanning / score attestation will be available after the verifier is deployed.",
     contractNotReady: "Contracts are not deployed yet (address is TBD). On-chain features will be available after mainnet deployment.",
     abiPlaceholder: "ABI is still a PLACEHOLDER — waiting for the real ABI from the forge build. Reading contracts is temporarily unavailable.",
@@ -810,6 +820,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("langToggle").addEventListener("click", toggleLang);
   document.getElementById("connectBtn").addEventListener("click", connectWallet);
+  const haveAgentIdLink = document.getElementById("haveAgentIdLink");
+  if (haveAgentIdLink) haveAgentIdLink.addEventListener("click", connectWallet);
   document.getElementById("ctaScan").addEventListener("click", () => { showView("scanView"); loadScan(); });
   document.getElementById("rescanBtn").addEventListener("click", loadScan);
   document.getElementById("attestBtn").addEventListener("click", requestScoreAttestation);

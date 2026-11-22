@@ -1,88 +1,112 @@
-/* AgentAllowance — CSS viết tay. Không framework, không build step. */
+/* AgentAllowance — CSS viết tay, phong cách StillAlive: nền vàng đậm,
+ * thẻ trắng viền đen + bóng cứng, chữ tiêu đề Baloo 2. Không framework, không build step. */
 * { box-sizing: border-box; }
 
 :root {
-  --yellow: #f0b90b;
-  --yellow-light: #fcd535;
+  --yellow: #ffc531;
+  --yellow-deep: #f5b301;
   --navy: #1b2a4a;
   --teal: #0e7c6b;
-  --ink: #181a20;
-  --muted: #5e6673;
+  --ink: #111111;
+  --muted: #4d4d4d;
   --card: #ffffff;
-  --green: #58cc02;
-  --green-dark: #46a302;
+  --green: #22c55e;
+  --green-dark: #16a34a;
   --red: #d93025;
   --amber: #b26a00;
-  --border: #e6e8ec;
-  --radius: 16px;
+  --border: #111111;
+  --radius: 20px;
+  --shadow: 6px 6px 0 #111111;
+  --shadow-sm: 3px 3px 0 #111111;
 }
 
 body {
   margin: 0;
   font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--ink);
-  background: linear-gradient(160deg, var(--yellow) 0%, var(--yellow-light) 55%, #ffe985 100%);
+  background: var(--yellow);
   min-height: 100vh;
+}
+
+h1, h2, h3, .logo, .btn, nav button, .pill, .countdown-pill {
+  font-family: "Baloo 2", "Nunito", system-ui, sans-serif;
 }
 
 a { color: #0b5fff; }
 button { font-family: inherit; cursor: pointer; }
 
+/* ---------- Header: thanh trắng như StillAlive ---------- */
 header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 18px;
-  max-width: 960px;
-  margin: 0 auto;
+  padding: 14px 20px;
+  background: #fff;
+  border-bottom: 3px solid var(--ink);
 }
 
-.logo { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
-.logo small { display: block; font-size: 12px; font-weight: 600; color: var(--muted); }
+.logo { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; white-space: nowrap; }
 
-.header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 
 .btn {
-  border: none;
+  display: inline-block;
+  text-decoration: none;
+  border: 2px solid var(--ink);
   border-radius: 12px;
-  padding: 10px 16px;
+  padding: 10px 18px;
   font-size: 15px;
   font-weight: 800;
-  background: var(--green);
-  color: #fff;
+  background: var(--yellow);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
-.btn:hover { background: var(--green-dark); }
-.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.btn-black { background: var(--ink); color: #fff; }
+.btn-black:hover { background: #2a2a2a; }
+
+.btn-big {
+  display: block;
+  text-align: center;
+  padding: 14px 18px;
+  font-size: 17px;
+}
 
 .btn-secondary {
   background: #fff;
   color: var(--ink);
-  border: 1px solid var(--border);
 }
 .btn-secondary:hover { background: #f5f5f5; }
 
 .btn-danger {
   background: #fff;
   color: var(--red);
-  border: 1px solid #f0b4b0;
+  border-color: var(--red);
+  box-shadow: 3px 3px 0 var(--red);
 }
-.btn-danger:hover { background: #fdecea; }
+.btn-danger:hover { background: #fdecea; box-shadow: 1px 1px 0 var(--red); }
 
 .btn-small { padding: 7px 12px; font-size: 14px; border-radius: 10px; }
 
 .lang-toggle {
-  border: 1px solid var(--border);
+  border: 2px solid var(--ink);
   background: #fff;
   border-radius: 999px;
   padding: 7px 12px;
   font-weight: 800;
   font-size: 14px;
+  box-shadow: var(--shadow-sm);
 }
+.lang-toggle:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
 
 .wallet-chip {
   background: #fff;
-  border: 1px solid var(--border);
+  border: 2px solid var(--ink);
   border-radius: 999px;
   padding: 7px 12px;
   font-size: 14px;
@@ -91,39 +115,139 @@ header {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  box-shadow: var(--shadow-sm);
 }
 
 nav {
   display: flex;
-  gap: 8px;
-  padding: 0 18px 12px;
-  max-width: 960px;
+  gap: 10px;
+  padding: 16px 20px 4px;
+  max-width: 1080px;
   margin: 0 auto;
   flex-wrap: wrap;
 }
 nav button {
-  border: 1px solid rgba(24, 26, 32, 0.15);
-  background: rgba(255, 255, 255, 0.75);
+  border: 2px solid var(--ink);
+  background: #fff;
   border-radius: 999px;
-  padding: 8px 14px;
-  font-size: 14px;
+  padding: 8px 16px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--ink);
+  box-shadow: var(--shadow-sm);
 }
+nav button:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
 nav button.active { background: var(--ink); color: #fff; }
 
-main { max-width: 960px; margin: 0 auto; padding: 0 18px 40px; }
+main { max-width: 1080px; margin: 0 auto; padding: 0 20px 40px; }
 
 .view { display: none; }
 .view.active { display: block; }
 
 .card {
   background: var(--card);
+  border: 2px solid var(--ink);
   border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 16px rgba(24, 26, 32, 0.08);
+  padding: 22px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
 }
+
+/* ---------- Hero: 2 cột kiểu StillAlive ---------- */
+.hero-wrap {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+  align-items: start;
+  margin: 18px 0;
+}
+.hero-left { padding-top: 8px; }
+.hero-left h1 {
+  font-size: 46px;
+  line-height: 1.05;
+  margin: 0 0 14px;
+  letter-spacing: -0.5px;
+}
+.hero-sub { font-size: 17px; line-height: 1.55; color: #262626; margin: 0 0 18px; }
+
+.stat-pills { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+.pill strong { font-weight: 800; }
+.pill .dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--green);
+  margin-right: 7px;
+  flex: none;
+}
+
+.countdown-pill {
+  display: inline-block;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 18px;
+}
+.countdown-pill .countdown { color: var(--yellow); font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* Thẻ Agent ID bên phải hero */
+.agent-id-panel { text-align: center; margin-bottom: 0; }
+.agent-id-panel h2 { font-size: 26px; margin: 14px 0 6px; }
+.agent-id-panel p { margin: 8px 0; }
+.agent-id-panel .muted { font-size: 15px; line-height: 1.5; }
+
+.agent-id-card {
+  width: 260px;
+  height: 330px;
+  margin: 6px auto 4px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  background: linear-gradient(150deg, #fbd84a 0%, #f0b90b 55%, #d99a06 100%);
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 8px 8px 0 rgba(17, 17, 17, 0.9);
+  transform: rotate(-2deg);
+  color: #1a1400;
+}
+.agent-id-top {
+  display: flex; justify-content: space-between;
+  font-size: 11px; font-weight: 800; letter-spacing: 1px;
+}
+.agent-id-name {
+  font-family: "Baloo 2", "Nunito", sans-serif;
+  font-size: 34px; font-weight: 800; letter-spacing: -0.5px;
+}
+.agent-id-foot {
+  display: flex; justify-content: space-between;
+  font-size: 12px; font-weight: 800;
+}
+
+.linklike {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.linklike:hover { color: #000; }
 
 /* Hình minh họa §6.7 (FR-13): flat illustration tự host trong assets/, alt VI/EN. */
 .illustration {
@@ -136,8 +260,8 @@ main { max-width: 960px; margin: 0 auto; padding: 0 18px 40px; }
 .hero-img { max-width: 480px; }
 .scan-art { max-width: 360px; }
 
-.hero h1 { font-size: 30px; line-height: 1.2; margin: 0 0 10px; }
-.hero p { margin: 6px 0; color: var(--muted); font-size: 16px; }
+h2 { font-size: 24px; margin: 0 0 12px; letter-spacing: -0.3px; }
+h3 { font-size: 19px; margin: 18px 0 8px; }
 
 .score-big {
   font-size: 56px;
@@ -153,11 +277,12 @@ main { max-width: 960px; margin: 0 auto; padding: 0 18px 40px; }
   font-weight: 800;
   font-size: 14px;
   margin-top: 8px;
+  border: 2px solid var(--ink);
 }
-.badge-gold { background: #fff3c4; color: #8a6d00; border: 1px solid #f0b90b; }
-.badge-silver { background: #eef0f3; color: #474d57; border: 1px solid #b6bcc6; }
-.badge-bronze { background: #fbe9d7; color: #7a4a12; border: 1px solid #e0a458; }
-.badge-none { background: #f5f5f5; color: var(--muted); border: 1px solid var(--border); }
+.badge-gold { background: #fff3c4; color: #8a6d00; }
+.badge-silver { background: #eef0f3; color: #474d57; }
+.badge-bronze { background: #fbe9d7; color: #7a4a12; }
+.badge-none { background: #f5f5f5; color: var(--muted); }
 
 .stat-grid {
   display: grid;
@@ -166,29 +291,48 @@ main { max-width: 960px; margin: 0 auto; padding: 0 18px 40px; }
 }
 .stat {
   background: #fff;
+  border: 2px solid var(--ink);
   border-radius: var(--radius);
   padding: 16px;
   text-align: center;
-  box-shadow: 0 4px 16px rgba(24, 26, 32, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 .stat .num { font-size: 28px; font-weight: 800; }
 .stat .lbl { font-size: 13px; color: var(--muted); font-weight: 700; }
 
-.steps { counter-reset: step; padding-left: 0; list-style: none; }
-.steps li { margin: 10px 0; padding-left: 34px; position: relative; }
+.steps {
+  counter-reset: step;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 0;
+}
+.steps li {
+  position: relative;
+  background: #fff8e1;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  padding: 16px;
+  padding-top: 44px;
+  font-size: 15px;
+  line-height: 1.5;
+  box-shadow: var(--shadow-sm);
+}
 .steps li::before {
   counter-increment: step;
   content: counter(step);
-  position: absolute; left: 0; top: 0;
-  width: 24px; height: 24px; border-radius: 50%;
+  position: absolute; left: 14px; top: 12px;
+  width: 26px; height: 26px; border-radius: 50%;
   background: var(--ink); color: #fff;
-  font-size: 13px; font-weight: 800;
+  font-size: 14px; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
 }
 
 .warning {
   background: #fff8e1;
-  border: 1px solid #f0b90b;
+  border: 2px solid var(--ink);
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 14px;
@@ -197,7 +341,7 @@ main { max-width: 960px; margin: 0 auto; padding: 0 18px 40px; }
 
 .notice {
   background: #eef4ff;
-  border: 1px solid #b9d2ff;
+  border: 2px solid #1a3a6b;
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 14px;
@@ -207,7 +351,7 @@ main { max-width: 960px; margin: 0 auto; padding: 0 18px 40px; }
 
 .error-box {
   background: #fdecea;
-  border: 1px solid #f0b4b0;
+  border: 2px solid var(--red);
   border-radius: 12px;
   padding: 12px 14px;
   font-size: 14px;
@@ -217,7 +361,7 @@ main { max-width: 960px; margin: 0 auto; padding: 0 18px 40px; }
 
 .approval-list { list-style: none; padding: 0; margin: 0; }
 .approval-item {
-  border: 1px solid var(--border);
+  border: 2px solid var(--ink);
   border-radius: 12px;
   padding: 14px;
   margin-bottom: 12px;
@@ -242,23 +386,25 @@ main { max-width: 960px; margin: 0 auto; padding: 0 18px 40px; }
 .flag-fixed { background: #eef4ff; color: #1a3a6b; }
 
 table { width: 100%; border-collapse: collapse; font-size: 15px; }
-th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #d9d9d9; }
 th { color: var(--muted); font-size: 13px; }
 td .addr-short { font-family: monospace; }
 
 .muted { color: var(--muted); font-size: 14px; }
-.countdown { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .history-list { list-style: none; padding: 0; margin: 0; }
-.history-list li { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
-footer { max-width: 960px; margin: 0 auto; padding: 0 18px 32px; color: rgba(24,26,32,0.7); font-size: 13px; }
+.history-list li { padding: 8px 0; border-bottom: 1px solid #d9d9d9; font-size: 15px; }
+footer { max-width: 1080px; margin: 0 auto; padding: 0 20px 32px; color: rgba(17, 17, 17, 0.75); font-size: 13px; }
 
 /* Responsive cơ bản cho màn hình điện thoại (dùng trong Binance App). */
-@media (max-width: 640px) {
-  .hero h1 { font-size: 24px; }
+@media (max-width: 760px) {
+  .hero-wrap { grid-template-columns: 1fr; }
+  .hero-left h1 { font-size: 32px; }
+  .steps { grid-template-columns: 1fr; }
   .stat-grid { grid-template-columns: 1fr; }
   .score-big { font-size: 44px; }
   header { flex-wrap: wrap; }
   .wallet-chip { max-width: 140px; }
   table { font-size: 14px; }
   .card { padding: 16px; }
+  .agent-id-card { width: 230px; height: 300px; }
 }

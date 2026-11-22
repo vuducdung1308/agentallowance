@@ -124,10 +124,9 @@ async function computeLeaderboard() {
     throw new Error("Verifier chưa cấu hình RPC_URL / AGENT_ALLOWANCE_ADDRESS");
   }
   const contract = agentAllowanceContract();
-  const [totalAgents, attestedLogs, approvalLogs] = await Promise.all([
+  const [totalAgents, attestedLogs] = await Promise.all([
     contract.totalAgents(),
     getPeriodLogs(provider, { topics: [SCORE_ATTESTED_TOPIC], address: AGENT_ALLOWANCE_ADDRESS }),
-    getPeriodLogs(provider, { topics: [APPROVAL_TOPIC] }),
   ]);
 
   // Điểm mới nhất mỗi ví (theo blockNumber, logIndex) + attestedAt từ timestamp block.
@@ -181,15 +180,25 @@ async function computeLeaderboard() {
     else bands["90-100"]++;
   }
 
-  // Tổng approval / revoke trong kỳ: đếm event Approval toàn chain.
+  // Tổng approval / revoke trong kỳ: chỉ đếm event Approval của các ví
+  // ĐÃ ATTEST (topic1 = owner, OR qua mảng topics). Trước đây quét toàn
+  // chain không lọc owner nên trên mainnet vượt giới hạn 50.000 log của
+  // RPC và /leaderboard trả 500 — trang Thống kê hiện toàn "—" (22/11).
+  // Khi chưa có ví nào attest thì approvals = revokes = 0, không cần query.
   // value > 0 = cấp approval; value == 0 = revoke (approve(spender, 0)).
   // Log không chuẩn (data không phải uint256 32 byte) thì bỏ qua, không đếm.
   let approvals = 0;
   let revokes = 0;
-  for (const log of approvalLogs) {
-    if (typeof log.data !== "string" || log.data.length !== 66) continue;
-    if (BigInt(log.data) === 0n) revokes++;
-    else approvals++;
+  const attestedAgents = [...latest.keys()];
+  if (attestedAgents.length) {
+    const approvalLogs = await getPeriodLogs(provider, {
+      topics: [APPROVAL_TOPIC, attestedAgents.map((a) => padTopic(a))],
+    });
+    for (const log of approvalLogs) {
+      if (typeof log.data !== "string" || log.data.length !== 66) continue;
+      if (BigInt(log.data) === 0n) revokes++;
+      else approvals++;
+    }
   }
 
   const data = {

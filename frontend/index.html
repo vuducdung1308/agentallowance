@@ -152,12 +152,23 @@ CONTRACTS (BNB Smart Chain, chain ID 56):
       <img src="assets/report-card.webp" alt="Thẻ báo cáo kiểm toán với đồng hồ điểm, con dấu và huy chương" data-i18n-alt="reportCardAlt" class="illustration" loading="lazy">
       <div id="profileNotice"></div>
       <p><strong id="profileHandle">—</strong></p>
-      <p><span data-i18n="profileVerified">Điểm đã xác nhận:</span> <strong id="profileScore">—</strong></p>
+      <div class="score-hero">
+        <div class="score-hero-label" data-i18n="overallScore">Điểm tổng</div>
+        <div class="score-hero-value"><strong id="profileScore">—</strong><span class="score-hero-max"> / 100</span></div>
+        <div class="score-hero-sub" id="profileScoreSub">—</div>
+      </div>
       <p><span data-i18n="profileEstimated">Điểm tạm tính:</span> <strong id="profileEstimated">—</strong></p>
       <p><span data-i18n="profileBadge">Badge:</span> <span id="profileBadge" class="badge-tier badge-none">—</span></p>
-      <p><button id="attestBtn" class="btn" type="button" data-i18n="requestAttest">Yêu cầu xác nhận điểm</button></p>
+      <p><span data-i18n="profileRank">Hạng trên bảng xếp hạng:</span> <strong id="profileRank">—</strong></p>
+      <p>
+        <button id="attestBtn" class="btn" type="button" data-i18n="requestAttest">Xác nhận điểm &amp; nhận Badge</button>
+        <button id="sharePassportBtn" class="btn btn-secondary" type="button" data-i18n="sharePassport">Chia sẻ passport</button>
+      </p>
       <h3 data-i18n="scoreHistory">Lịch sử điểm</h3>
       <ul id="scoreHistory" class="history-list"></ul>
+      <h3 data-i18n="onChainProof">Bằng chứng on-chain</h3>
+      <p class="proof-line">AgentAllowance: <a id="proofAA" href="#" target="_blank" rel="noopener">—</a></p>
+      <p class="proof-line">Badge: <a id="proofBadge" href="#" target="_blank" rel="noopener">—</a></p>
       <div class="warning" data-i18n="disclaimer">⚠️ Hygiene Score chỉ phản ánh trạng thái approval tại thời điểm quét, dựa trên dữ liệu công khai. Điểm này không phải bảo chứng an toàn tuyệt đối và không phải tư vấn đầu tư.</div>
     </div>
   </section>

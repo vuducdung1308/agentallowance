@@ -73,7 +73,15 @@ const I18N = {
     profileVerified: "Điểm đã xác nhận:",
     profileEstimated: "Điểm tạm tính:",
     profileBadge: "Badge:",
-    requestAttest: "Yêu cầu xác nhận điểm",
+    overallScore: "Điểm tổng",
+    profileRank: "Hạng trên bảng xếp hạng:",
+    requestAttest: "Xác nhận điểm & nhận Badge",
+    sharePassport: "Chia sẻ passport",
+    passportCopied: "Đã sao chép passport.",
+    passportCopyFailed: "Không sao chép được.",
+    shareNoScore: "Chưa có điểm để chia sẻ — hãy quét ví trước.",
+    passportText: "{handle} đạt Hygiene Score {score}/100 ({tier}) trên AgentAllowance — kiểm chứng on-chain tại {url}",
+    onChainProof: "Bằng chứng on-chain",
     scoreHistory: "Lịch sử điểm",
     leaderboardTitle: "Bảng xếp hạng ví sạch nhất",
     leaderboardHint: "Chỉ tính điểm đã xác nhận. Hòa điểm thì ví đạt điểm đó sớm hơn xếp trên. Ví chỉ có điểm \"tạm tính\" không lên bảng. Chỉ hiện tên .ai + điểm, không hiện địa chỉ ví đầy đủ.",
@@ -172,7 +180,15 @@ const I18N = {
     profileVerified: "Verified score:",
     profileEstimated: "Estimated score:",
     profileBadge: "Badge:",
-    requestAttest: "Request score attestation",
+    overallScore: "Overall score",
+    profileRank: "Leaderboard rank:",
+    requestAttest: "Attest score & claim Badge",
+    sharePassport: "Share passport",
+    passportCopied: "Passport copied.",
+    passportCopyFailed: "Copy failed.",
+    shareNoScore: "No score to share yet — scan your wallet first.",
+    passportText: "{handle} scored {score}/100 ({tier}) Hygiene Score on AgentAllowance — verify on-chain at {url}",
+    onChainProof: "On-chain proof",
     scoreHistory: "Score history",
     leaderboardTitle: "Cleanest wallets leaderboard",
     leaderboardHint: "Verified scores only. On a tie, the wallet that reached the score earlier ranks higher. Wallets with only an \"estimated\" score are not listed. Only .ai names and scores are shown, never full wallet addresses.",
@@ -579,6 +595,10 @@ async function loadProfile() {
     if (handleEl) handleEl.textContent = "—";
     if (scoreEl) scoreEl.textContent = "—";
     if (estEl) estEl.textContent = "—";
+    const subEl0 = document.getElementById("profileScoreSub");
+    if (subEl0) subEl0.textContent = "—";
+    const rankEl0 = document.getElementById("profileRank");
+    if (rankEl0) rankEl0.textContent = "—";
     if (historyEl) historyEl.innerHTML = "";
     return;
   }
@@ -599,11 +619,9 @@ async function loadProfile() {
     const s = await c.getScore(currentAccount);
     const score = Number(s.score || s[1] || 0);
     const attestedAt = Number(s.attestedAt || s[5] || 0);
-    if (scoreEl) {
-      scoreEl.textContent = attestedAt === 0
-        ? "— (" + t("noScoreHistory") + ")"
-        : score + " / 100 (" + t("verifiedScore") + ")";
-    }
+    if (scoreEl) scoreEl.textContent = attestedAt === 0 ? "—" : String(score);
+    const subEl = document.getElementById("profileScoreSub");
+    if (subEl) subEl.textContent = attestedAt === 0 ? t("noScoreHistory") : t("verifiedScore");
     const badge = await getBadgeRead();
     if (badge && badgeEl) {
       const tier = Number(await badge.tierOf(currentAccount));
@@ -646,6 +664,19 @@ async function loadProfile() {
       }
     }
     showNotice(noticeEl, "");
+    // Hạng trên bảng xếp hạng (kiểu OPN Builder Board): fail-open, lỗi thì giữ "—".
+    try {
+      if (!isTbd(CONFIG.verifierUrl)) {
+        const res = await fetch(CONFIG.verifierUrl.replace(/\/$/, "") + "/leaderboard");
+        if (res.ok) {
+          const data = await res.json();
+          const rows = Array.isArray(data.rows) ? data.rows : [];
+          const idx = rows.findIndex((r) => String(r.agent || "").toLowerCase() === currentAccount.toLowerCase());
+          const rankEl = document.getElementById("profileRank");
+          if (rankEl) rankEl.textContent = idx >= 0 ? "#" + (idx + 1) : "—";
+        }
+      }
+    } catch { /* giữ "—" */ }
   } catch (e) {
     showNotice(noticeEl, t("scanFailed"), "error");
   }
@@ -849,6 +880,45 @@ async function copyAgentPrompt() {
   }
 }
 
+// ---------- Chia sẻ passport (kiểu OPN Builder Board) ----------
+async function sharePassport() {
+  const btn = document.getElementById("sharePassportBtn");
+  const handle = (document.getElementById("profileHandle") || {}).textContent || "—";
+  const verified = (document.getElementById("profileScore") || {}).textContent || "—";
+  const tier = (document.getElementById("profileBadge") || {}).textContent || "—";
+  let score = verified;
+  let isVerified = true;
+  if (!score || score === "—") {
+    // Chưa có điểm đã xác nhận -> dùng điểm tạm tính, ghi rõ chưa xác nhận.
+    const est = (document.getElementById("profileEstimated") || {}).textContent || "";
+    const m = String(est).match(/(\d+)/);
+    if (!m) { setStatus(t("shareNoScore"), "error"); return; }
+    score = m[1];
+    isVerified = false;
+  }
+  const text = t("passportText", { handle, score, tier, url: window.location.origin }) +
+    (isVerified ? "" : " (" + t("estimatedScore") + ")");
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    if (btn) {
+      const old = btn.textContent;
+      btn.textContent = t("passportCopied");
+      setTimeout(() => { btn.textContent = old; }, 2000);
+    }
+  } catch (e) {
+    setStatus(t("passportCopyFailed"), "error");
+  }
+}
+
 // ---------- Init ----------
 document.addEventListener("DOMContentLoaded", () => {
   try {
@@ -867,6 +937,19 @@ document.addEventListener("DOMContentLoaded", () => {
   if (haveAgentIdLink) haveAgentIdLink.addEventListener("click", connectWallet);
   const copyPromptBtn = document.getElementById("copyPromptBtn");
   if (copyPromptBtn) copyPromptBtn.addEventListener("click", copyAgentPrompt);
+  const shareBtn = document.getElementById("sharePassportBtn");
+  if (shareBtn) shareBtn.addEventListener("click", sharePassport);
+  // Bằng chứng on-chain (kiểu OPN Builder Board): link BscScan 2 contract.
+  const proofAA = document.getElementById("proofAA");
+  if (proofAA && !isTbd(CONFIG.agentAllowanceAddress)) {
+    proofAA.href = "https://bscscan.com/address/" + CONFIG.agentAllowanceAddress;
+    proofAA.textContent = shortAddress(CONFIG.agentAllowanceAddress);
+  }
+  const proofBadge = document.getElementById("proofBadge");
+  if (proofBadge && !isTbd(CONFIG.badgeAddress)) {
+    proofBadge.href = "https://bscscan.com/address/" + CONFIG.badgeAddress;
+    proofBadge.textContent = shortAddress(CONFIG.badgeAddress);
+  }
   document.getElementById("ctaScan").addEventListener("click", () => { showView("scanView"); loadScan(); });
   document.getElementById("rescanBtn").addEventListener("click", loadScan);
   document.getElementById("attestBtn").addEventListener("click", requestScoreAttestation);
